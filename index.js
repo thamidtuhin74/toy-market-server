@@ -1,6 +1,6 @@
 const express = require('express');
 var cors = require('cors');//first line
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 const app = express()
@@ -31,14 +31,19 @@ async function run() {
     // create database
     const database  = client.db('toysDB');//create database
     const toysCollection = database.collection('toys');//collection in database
-    console.log('collll: ',toysCollection);
 
     app.get('/all-toys',async(req, res) => {
         const cursor = toysCollection.find();
         const result = await cursor.toArray();
-        console.log('RES: ',result);
         res.send(result);
       })
+    app.get('/all-toys/:id',async(req, res) => {
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const singleToy = await toysCollection.findOne(query);
+        res.send(singleToy);
+        console.log('singleToy: ',singleToy);
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
