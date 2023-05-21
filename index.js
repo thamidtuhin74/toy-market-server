@@ -70,7 +70,19 @@ async function run() {
       const id  = req.params.id;
       const updatedToy  = req.body;
       console.log(updatedToy);
-      
+      //sent updatedToy to Database using ID
+      const query = {_id: new ObjectId(id)};//filter
+      const options = {upsert: true};
+      const editToy = {
+        $set:{
+          price: updatedToy.price,
+          quantity: updatedToy.quantity,
+          details: updatedToy.details
+        }
+      }
+      const result = await toysCollection.updateOne(query,editToy,options);
+      res.send(result);
+      console.log(result);
     })
 
 
