@@ -32,6 +32,10 @@ async function run() {
     const database  = client.db('toysDB');//create database
     const toysCollection = database.collection('toys');//collection in database
 
+    // const results = toysCollection.updateMany( {}, { $rename: { "seller.name": "seller.sellerName" } } );
+    // console.log('change: ',results );
+
+
     app.get('/all-toys',async(req, res) => {
         const cursor = toysCollection.find();
         const result = await cursor.toArray();
@@ -43,6 +47,23 @@ async function run() {
         const singleToy = await toysCollection.findOne(query);
         res.send(singleToy);
         console.log('singleToy: ',singleToy);
+    })
+
+    app.post('/add-a-toy' , async(req,res)=>{
+        const toy = req.body;
+        console.log('new user : ',toy);
+              //sent to DB
+        const result = await toysCollection.insertOne(toy);//send to MongDB
+        res.send(result);
+        console.log(result)
+      })
+    
+    app.delete('/all-toys/:id', async(req, res)=>{
+      const id  =  req.params.id;
+      console.log('delete id from server: ', id);
+      const query = {_id: new ObjectId(id)}
+      const result  = await toysCollection.deleteOne(query);
+      res.send(result);
     })
 
     // Send a ping to confirm a successful connection
